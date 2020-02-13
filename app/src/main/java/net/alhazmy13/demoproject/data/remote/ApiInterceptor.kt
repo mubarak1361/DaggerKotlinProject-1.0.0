@@ -10,7 +10,7 @@ class ApiInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain?): Response {
         val originalRequest: Request = chain!!.request()
 
-        return chain?.proceed(originalRequest)
+        return chain.proceed(originalRequest)
     }
 
 

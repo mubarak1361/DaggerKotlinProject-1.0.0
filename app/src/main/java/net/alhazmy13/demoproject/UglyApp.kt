@@ -4,8 +4,7 @@ import android.databinding.DataBindingUtil
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 import net.alhazmy13.demoproject.component.BaseDataBindingComponent
-import net.alhazmy13.demoproject.dependency.DaggerWebComponent
-import net.alhazmy13.demoproject.dependency.WebModule
+import net.alhazmy13.demoproject.di.DaggerAppComponent
 
 /**
  * @author CIPL0349
@@ -14,7 +13,7 @@ import net.alhazmy13.demoproject.dependency.WebModule
  class UglyApp : DaggerApplication(){
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerWebComponent.builder().webModule(WebModule(this)).build()
+        return DaggerAppComponent.builder().application(this).build()
     }
 
     override fun onCreate() {

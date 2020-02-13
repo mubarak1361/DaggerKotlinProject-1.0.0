@@ -1,16 +1,13 @@
-package net.alhazmy13.demoproject.dependency
+package net.alhazmy13.demoproject.di
 
-import android.content.Context
+import android.app.Application
 import dagger.Module
 import dagger.Provides
 import net.alhazmy13.demoproject.BuildConfig
-import net.alhazmy13.demoproject.data.model.Movie
 import net.alhazmy13.demoproject.data.remote.ApiInterceptor
 import net.alhazmy13.demoproject.data.remote.MovieService
-import net.alhazmy13.demoproject.data.remote.PostService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -20,7 +17,7 @@ import javax.inject.Singleton
  * @created 21/05/18
  */
 @Module
-class WebModule(private val context: Context) {
+class AppModule {
 
     private val BASE_URL = "https://api.androidhive.info"
 
@@ -47,10 +44,10 @@ class WebModule(private val context: Context) {
 
     @Singleton
     @Provides
-    fun provideRetrofit(httpClient: OkHttpClient.Builder,builder: Retrofit.Builder,loggingInterceptor: HttpLoggingInterceptor): Retrofit {
+    fun provideRetrofit(application:Application,httpClient: OkHttpClient.Builder,builder: Retrofit.Builder,loggingInterceptor: HttpLoggingInterceptor): Retrofit {
         if (BuildConfig.DEBUG) {
             httpClient.addInterceptor(loggingInterceptor)
-            httpClient.addInterceptor(ApiInterceptor(context))
+            httpClient.addInterceptor(ApiInterceptor(application))
         }
         builder.client(httpClient.build())
         return builder.build()
@@ -60,18 +57,6 @@ class WebModule(private val context: Context) {
     @Provides
     fun provideMovieService(retrofit: Retrofit):MovieService {
         return retrofit.create(MovieService::class.java)
-    }
-
-    @Singleton
-    @Provides
-    fun providePostService(retrofit: Retrofit):PostService {
-        return retrofit.create(PostService::class.java)
-    }
-
-    @Singleton
-    @Provides
-    fun provideMovies(movieService: MovieService): Call<MutableList<Movie>> {
-        return movieService.getMovies()
     }
 
 }

@@ -1,12 +1,9 @@
 package net.alhazmy13.demoproject.view
 
-import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import dagger.android.AndroidInjection
 import net.alhazmy13.demoproject.R
-import net.alhazmy13.demoproject.data.model.Movie
-import net.alhazmy13.demoproject.data.remote.MovieService
+import net.alhazmy13.demoproject.data.model.Post
+import net.alhazmy13.demoproject.data.remote.PostService
 import net.alhazmy13.demoproject.databinding.ActivityPostBinding
 import net.alhazmy13.demoproject.viewmodel.PostViewModel
 import retrofit2.Call
@@ -18,28 +15,33 @@ import javax.inject.Inject
  * @author CIPL0349
  * @created 21/05/18
  */
-class PostActivity : AppCompatActivity() {
+class PostActivity : BaseActivity<ActivityPostBinding>() {
 
     @Inject
-    lateinit var movieService: MovieService
+    lateinit var postService: PostService
+
+    @Inject
+    lateinit var value:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        val activityPostBinding = DataBindingUtil.setContentView<ActivityPostBinding>(this, R.layout.activity_post)
-
-        movieService.getMovies().enqueue(object :Callback<MutableList<Movie>>{
-            override fun onFailure(call: Call<MutableList<Movie>>, t: Throwable) {
+        postService.getPosts().enqueue(object:Callback<MutableList<Post>>{
+            override fun onFailure(call: Call<MutableList<Post>>, t: Throwable) {
 
             }
 
-            override fun onResponse(call: Call<MutableList<Movie>>, response: Response<MutableList<Movie>>) {
-                if (response.isSuccessful && response.body() != null) {
-                    activityPostBinding.viewModel = PostViewModel(response.body()!!)
+            override fun onResponse(call: Call<MutableList<Post>>, response: Response<MutableList<Post>>) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        viewDataBinding.viewModel = PostViewModel(it)
+                    }
                 }
             }
-
         })
+    }
+
+    override fun getLayoutId(): Int {
+        return R.layout.activity_post
     }
 }
